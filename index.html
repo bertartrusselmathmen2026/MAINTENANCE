@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pemeliharaan </title>
+    <style>
+        :root {
+            --bg-main: #070d14;            /* Biru gelap premium latar belakang */
+            --bg-panel: #0f1722;           /* Navy slate untuk panel utama */
+            --bg-item: #16222f;            /* Warna kartu spesifikasi */
+            --accent-green: #00b074;       /* Hijau khas SMP Avisena Cup */
+            --accent-green-hover: #008f5d;
+            --accent-green-glow: rgba(0, 176, 116, 0.25);
+            --text-white: #ffffff;
+            --text-muted: #8492a6;         /* Abu-abu kebiruan lembut */
+            --border-default: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(0, 176, 116, 0.3);
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .stadium-glow-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: radial-gradient(circle at 50% 20%, rgba(0, 176, 116, 0.05) 0%, transparent 75%);
+            pointer-events: none;
+        }
+
+        .header-nav {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .brand-logo svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--accent-green);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn-text {
+            color: var(--text-muted);
+        }
+
+        .nav-btn-text:hover {
+            color: var(--text-white);
+        }
+
+        .nav-btn-green {
+            background-color: rgba(0, 176, 116, 0.1);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .nav-btn-green:hover {
+            background-color: var(--accent-green);
+            color: var(--text-white);
+            box-shadow: 0 0 10px var(--accent-green-glow);
+        }
+
+        .nav-btn-dark {
+            background-color: var(--bg-panel);
+            color: var(--text-white);
+            border: 1px solid var(--border-default);
+        }
+
+        .nav-btn-dark:hover {
+            border-color: var(--text-muted);
+        }
+
+        .hero-banner {
+            width: calc(100% - 50px);
+            max-width: 1150px;
+            height: 260px;
+            margin: 10px 25px 25px 25px;
+            border-radius: 16px;
+            background-image: url('https://i.pinimg.com/1200x/b8/26/09/b82609b88747987fc2329e375094519d.jpg');
+            background-size: cover;
+            background-position: center 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0 45px;
+            border: 1px solid rgba(0, 176, 116, 0.25);
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+        }
+
+        /* Gradient Overlay Premium: Hanya bayangan gelap tipis di bawah untuk menjaga keterbacaan teks */
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, 
+                rgba(7, 13, 20, 0.1) 0%, 
+                rgba(7, 13, 20, 0.4) 60%, 
+                rgba(7, 13, 20, 0.85) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 5;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .hero-indicator-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            display: inline-block;
+            animation: pulseBlink 1.5s infinite alternate;
+        }
+
+        .hud-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 25px 35px 25px;
+            z-index: 10;
+        }
+
+        .hud-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 24px;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadinUp 0.8s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+        }
+
+        @keyframes fadinUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Glassmorphic Tactical Panels */
+        .hud-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-default);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .panel-badge {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            background-color: rgba(0, 176, 116, 0.1);
+            border: 1px solid rgba(0, 176, 116, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-pulse-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--accent-green);
+            animation: pulseBlink 1s infinite alternate;
+        }
+
+        .system-heading {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            color: var(--text-white);
+        }
+
+        .system-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .spec-item {
+            background: var(--bg-item);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: all 0.25s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+
+        .spec-item:hover {
+            border-color: var(--border-active);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 176, 116, 0.05);
+        }
+
+        .spec-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-value {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        .spec-value.green-highlight {
+            color: var(--accent-green);
+        }
+
+        .clock-panel {
+            justify-content: space-between;
+            background: linear-gradient(180deg, var(--bg-panel) 0%, #0a111a 100%);
+        }
+
+        .clock-header-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-default);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .cyber-clock-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: auto 0;
+            gap: 8px;
+        }
+
+        .clock-day-display {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            background-color: rgba(0, 176, 116, 0.08);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .clock-time-digits {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #060c14;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-default);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+            width: 100%;
+        }
+
+        .ms-fast-ticker {
+            color: var(--accent-green);
+            font-size: 1.5rem;
+            min-width: 60px;
+            margin-left: 6px;
+            font-weight: 800;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding-left: 8px;
+        }
+
+        .clock-divider {
+            animation: flashDivider 0.5s infinite alternate;
+            padding: 0 2px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes flashDivider {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes pulseBlink {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* Bottom HUD Status Bar */
+        .hud-footer-bar {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-default);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        @media (max-width: 880px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                padding-bottom: 30px;
+            }
+
+            .header-nav {
+                padding: 15px 20px;
+            }
+
+            .brand-logo {
+                font-size: 1.1rem;
+            }
+
+            .nav-actions .nav-btn-text {
+                display: none;
+            }
+
+            .hero-banner {
+                width: calc(100% - 30px);
+                margin: 10px 15px 20px 15px;
+                height: 160px;
+                padding: 0 25px;
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .hud-wrapper {
+                padding: 10px 15px;
+            }
+
+            .hud-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .hud-panel {
+                padding: 25px;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .clock-time-digits {
+                font-size: 1.8rem;
+                padding: 15px;
+            }
+
+            .ms-fast-ticker {
+                font-size: 1.2rem;
+                min-width: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Glow BG -->
+    <div class="stadium-glow-bg"></div>
+
+    <!-- Navigasi Turnamen (SMP Avisena Cup Style) -->
+    <header class="header-nav">
+        <div class="brand-logo">
+            <!-- Icon bola kaki SVG mini -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="46" fill="none" stroke="var(--accent-green)" stroke-width="8"/>
+                <polygon points="50,28 69,42 62,64 38,64 31,42" fill="var(--accent-green)"/>
+                <path d="M50,4 L50,28 M4,50 L31,42 M18,15 L31,42 M82,15 L69,42 M96,50 L69,42 M62,64 L80,85 M38,64 L20,85 M50,96 L50,64" stroke="var(--accent-green)" stroke-width="6"/>
+            </svg>
+            <span>Pemeliharaan Sistem</span>
+        </div>
+
+    </header>
+
+    <!-- Spanduk Hero Utama (Tanpa Transparansi Warna) -->
+    <section class="hero-banner">
+        <div class="hero-content">
+            <h1 class="hero-title">MAINTENANCE</h1>
+            <div class="hero-subtitle">
+                <span class="hero-indicator-dot"></span> The Champions Stage
+            </div>
+        </div>
+    </section>
+
+    <!-- Frame Dashboard Diagnostik -->
+    <main class="hud-wrapper">
+        <div class="hud-container" id="hudFrame">
+            
+            <!-- PANEL KIRI (Desktop) / PANEL ATAS (HP): Jam Digital Presisi Tinggi -->
+            <div class="hud-panel clock-panel">
+                <div>
+                    <div class="clock-header-tag">LIVE TRACER</div>
+
+                    <!-- Jam Taktis Utama -->
+                    <div class="cyber-clock-wrapper">
+                        <div class="clock-day-display" id="clockDay">HARI</div>
+                        <div class="clock-time-digits">
+                            <span id="clockHour">00</span>
+                            <span class="clock-divider">:</span>
+                            <span id="clockMin">00</span>
+                            <span class="clock-divider">:</span>
+                            <span id="clockSec">00</span>
+                            <span class="ms-fast-ticker" id="clockMs">000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Status Taktis -->
+                <div class="hud-footer-bar">
+                    <span>TAHUN SIKLUS: 2026</span>
+                    <span>STATUS: MAINTENANCE</span>
+                </div>
+            </div>
+
+            <!-- PANEL KANAN (Desktop) / PANEL BAWAH (HP): Telemetri Spesifikasi Hardware Pengguna -->
+            <div class="hud-panel">
+                <div>
+                    <div class="panel-badge">
+                        <div class="badge-pulse-dot"></div>
+                        <span>Pemeliharaan Sistem </span>
+                    </div>
+                    
+                    <p class="system-desc">
+                        Mohon maaf atas ketidaknyamanan ini. Kami sedang melakukan pemeliharaan rutin untuk memberikan layanan yang lebih optimal. Sistem utama kami sedang melakukan pembaruan rutin untuk peningkatan stabilitas server pusat. memvalidasi kecocokan perangkat keras Anda.
+                    </p>
+                </div>
+
+                <!-- Grid Hasil Scan Spesifikasi -->
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <span class="spec-label">Sistem Operasi (OS)</span>
+                        <span class="spec-value green-highlight" id="devOS">Memindai...</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Akses Perangkat</span>
+                        <span class="spec-value" id="devBrowser">Memindai...</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Resolusi Layar</span>
+                        <span class="spec-value green-highlight" id="devScreen">0000 x 0000</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Inti Prosesor (CPU)</span>
+                        <span class="spec-value" id="devCPU">-- Cores</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Status Mode</span>
+                        <span class="spec-value" id="devNetwork">ONLINE</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Kapasitas Baterai</span>
+                        <span class="spec-value" id="devBattery">Membaca daya...</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==================================================
+         7. SYSTEM TELEMETRY, CLOCK, & TELEMETRY CORE
+         ================================================== -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const hudFrame = document.getElementById("hudFrame");
+            hudFrame.style.opacity = "1";
+
+            // Global variable spesifikasi perangkat untuk dianalisis AI
+            let currentDeviceSpecs = {};
+
+            // 1. ENGINE: TELEMETRI PERANGKAT (DIAGNOSTIK REAL-TIME)
+            function runDeviceDiagnostics() {
+                const userAgent = navigator.userAgent;
+                
+                // Deteksi OS Komprehensif
+                let os = "Sistem Operasi Tidak Dikenal";
+                if (userAgent.indexOf("Windows NT 10.0") !== -1) os = "Windows 10/11";
+                else if (userAgent.indexOf("Windows NT 6.2") !== -1) os = "Windows 8";
+                else if (userAgent.indexOf("Macintosh") !== -1) os = "macOS";
+                else if (userAgent.indexOf("iPhone") !== -1) os = "iOS (iPhone)";
+                else if (userAgent.indexOf("iPad") !== -1) os = "iPadOS";
+                else if (userAgent.indexOf("Android") !== -1) os = "Android OS";
+                else if (userAgent.indexOf("Linux") !== -1) os = "Linux Engine";
+                document.getElementById("devOS").innerText = os;
+                currentDeviceSpecs.os = os;
+
+                // Deteksi Browser
+                let browser = "Peramban Web";
+                if (userAgent.indexOf("Firefox") !== -1) browser = "Mozilla Firefox";
+                else if (userAgent.indexOf("SamsungBrowser") !== -1) browser = "Samsung Internet";
+                else if (userAgent.indexOf("Chrome") !== -1 && userAgent.indexOf("Safari") !== -1) browser = "Google Chrome";
+                else if (userAgent.indexOf("Safari") !== -1 && userAgent.indexOf("Chrome") === -1) browser = "Apple Safari";
+                else if (userAgent.indexOf("Edge") !== -1) browser = "Microsoft Edge";
+                document.getElementById("devBrowser").innerText = browser;
+                currentDeviceSpecs.browser = browser;
+
+                // Resolusi Layar Asli
+                const screenRes = `${window.screen.width} x ${window.screen.height} px`;
+                document.getElementById("devScreen").innerText = screenRes;
+                currentDeviceSpecs.screenResolution = screenRes;
+
+                // Logika CPU Cores
+                const cores = navigator.hardwareConcurrency || "Multicore";
+                const cpuString = typeof cores === 'number' ? `${cores} Logic Cores` : cores;
+                document.getElementById("devCPU").innerText = cpuString;
+                currentDeviceSpecs.cpuCores = cpuString;
+
+                // Status Koneksi (Online / Offline Listener)
+                const netStatus = document.getElementById("devNetwork");
+                function updateNetState() {
+                    if (navigator.onLine) {
+                        netStatus.innerText = "TERHUBUNG / ONLINE";
+                        netStatus.style.color = "var(--accent-green)";
+                        currentDeviceSpecs.networkStatus = "Online";
+                    } else {
+                        netStatus.innerText = "TERPUTUS / OFFLINE";
+                        netStatus.style.color = "#ff3333";
+                        currentDeviceSpecs.networkStatus = "Offline";
+                    }
+                }
+                window.addEventListener("online", updateNetState);
+                window.addEventListener("offline", updateNetState);
+                updateNetState();
+
+                // Pemindai Baterai
+                const batStatus = document.getElementById("devBattery");
+                if (navigator.getBattery) {
+                    navigator.getBattery().then(battery => {
+                        function updateBatteryDetails() {
+                            const pct = Math.floor(battery.level * 100);
+                            const state = battery.charging ? " [MENGECAS]" : " [MENGGUNAKAN BATERAI]";
+                            batStatus.innerText = `${pct}%${state}`;
+                            currentDeviceSpecs.battery = `${pct}% with state${state}`;
+                        }
+                        updateBatteryDetails();
+                        battery.addEventListener("levelchange", updateBatteryDetails);
+                        battery.addEventListener("chargingchange", updateBatteryDetails);
+                    }).catch(() => {
+                        batStatus.innerText = "Sistem Terproteksi";
+                        currentDeviceSpecs.battery = "Protected";
+                    });
+                } else {
+                    batStatus.innerText = "Akses Daya Terbatas";
+                    currentDeviceSpecs.battery = "Limited Access";
+                }
+            }
+            runDeviceDiagnostics();
+
+            // 2. ENGINE: TACTICAL CYBER CLOCK (60 FPS) dengan format "Sabtu, 20 Juni 2026"
+            const elDay = document.getElementById("clockDay");
+            const elHour = document.getElementById("clockHour");
+            const elMin = document.getElementById("clockMin");
+            const elSec = document.getElementById("clockSec");
+            const elMs = document.getElementById("clockMs");
+
+            const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+            function pad2(num) {
+                return String(num).padStart(2, '0');
+            }
+
+            function pad3(num) {
+                return String(num).padStart(3, '0');
+            }
+
+            function syncCyberClock() {
+                const now = new Date();
+                
+                // Format tanggal dinamis: "Sabtu, 20 Juni 2026"
+                const hariString = namaHari[now.getDay()];
+                const tanggal = now.getDate();
+                const bulanString = namaBulan[now.getMonth()];
+                const tahun = now.getFullYear();
+                
+                elDay.innerText = `${hariString}, ${tanggal} ${bulanString} ${tahun}`;
+                
+                elHour.innerText = pad2(now.getHours());
+                elMin.innerText = pad2(now.getMinutes());
+                elSec.innerText = pad2(now.getSeconds());
+                elMs.innerText = pad3(now.getMilliseconds());
+                requestAnimationFrame(syncCyberClock);
+            }
+            requestAnimationFrame(syncCyberClock);
+        });
+    </script>
+</body>
+</html>

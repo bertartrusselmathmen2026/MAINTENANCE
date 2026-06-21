@@ -487,7 +487,7 @@
                 <polygon points="50,28 69,42 62,64 38,64 31,42" fill="var(--accent-green)"/>
                 <path d="M50,4 L50,28 M4,50 L31,42 M18,15 L31,42 M82,15 L69,42 M96,50 L69,42 M62,64 L80,85 M38,64 L20,85 M50,96 L50,64" stroke="var(--accent-green)" stroke-width="6"/>
             </svg>
-            <span>Pemeliharaan Sistem</span>
+            <span>Upgrade sistem web</span>
         </div>
 
     </header>
@@ -495,7 +495,7 @@
     <!-- Spanduk Hero Utama (Tanpa Transparansi Warna) -->
     <section class="hero-banner">
         <div class="hero-content">
-            <h1 class="hero-title">MAINTENANCE</h1>
+            <h1 class="hero-title">Sistem ditingkatkan</h1>
             <div class="hero-subtitle">
                 <span class="hero-indicator-dot"></span> The Champions Stage
             </div>
@@ -527,8 +527,8 @@
 
                 <!-- Footer Status Taktis -->
                 <div class="hud-footer-bar">
-                    <span>TAHUN SIKLUS: 2026</span>
-                    <span>STATUS: MAINTENANCE</span>
+                    <span>Tahun Dev: 2026</span>
+                    <span>Status: Upgrading web </span>
                 </div>
             </div>
 
@@ -537,11 +537,11 @@
                 <div>
                     <div class="panel-badge">
                         <div class="badge-pulse-dot"></div>
-                        <span>Pemeliharaan Sistem </span>
+                        <span> Sistem Ditingkatkan Otomatis</span>
                     </div>
                     
                     <p class="system-desc">
-                        Mohon maaf atas ketidaknyamanan ini. Kami sedang melakukan pemeliharaan rutin untuk memberikan layanan yang lebih optimal. Sistem utama kami sedang melakukan pembaruan rutin untuk peningkatan stabilitas server pusat. memvalidasi kecocokan perangkat keras Anda.
+                        Kami sedang melakukan peningkatan sistem untuk memberikan performa informasi dan pengalaman yang lebih baik. Pengujian kecocokan perangkat keras...
                     </p>
                 </div>
 
@@ -648,7 +648,7 @@
                     navigator.getBattery().then(battery => {
                         function updateBatteryDetails() {
                             const pct = Math.floor(battery.level * 100);
-                            const state = battery.charging ? " [MENGECAS]" : " [MENGGUNAKAN BATERAI]";
+                            const state = battery.charging ? " [Isi daya]" : " [Daya battry]";
                             batStatus.innerText = `${pct}%${state}`;
                             currentDeviceSpecs.battery = `${pct}% with state${state}`;
                         }
